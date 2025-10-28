@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  gerenciamento:
+    build: ./gerenciamento
+    container_name: gerenciamento
+    ports:
+      - "5000:5000"
+
+  reservas:
+    build: ./reservas
+    container_name: reservas
+    ports:
+      - "5001:5000"   
+    depends_on:
+      - gerenciamento
+
+  atividades:
+    build: ./atividades
+    container_name: atividades
+    ports:
+      - "5002:5000"   
+    depends_on:
+      - gerenciamento
