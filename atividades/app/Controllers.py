@@ -9,7 +9,6 @@ class AtividadesController:
         
         return jsonify([r.to_json() for r in atividades]), 200
 
-
     @staticmethod
     def get_atividade_by_id(id):
         atividades=Atividades.query.get(id)
@@ -32,7 +31,36 @@ class AtividadesController:
             turma_id=turma_id,
             professor_id=professor_id
         )
+
+    @staticmethod    
+    def update_atividade(id):
+        atividade = Atividades.query.get(id)
+        if not atividade:
+            return jsonify({'message': 'Atividade não encontrada'}), 404
         
+        data = request.json
+        
+        # Atualiza apenas os campos enviados, mantém os valores existentes se não enviados
+        atividade.nome_atividade = data.get('nome_atividade', atividade.nome_atividade)
+        atividade.descricao = data.get('descricao', atividade.descricao)
+        atividade.data = data.get('data', atividade.data)
+        atividade.turma_id = data.get('turma_id', atividade.turma_id)
+        atividade.professor_id = data.get('professor_id', atividade.professor_id)
+        
+        db.session.commit()
+        return jsonify(atividade.to_json()), 200
+
+    @staticmethod
+    def delete_atividade(id):
+        atividade = Atividades.query.get(id)
+        
+        if not atividade:
+            return jsonify({'message': 'Atividade não encontrada'}), 404
+        
+        db.session.delete(atividade)
+        db.session.commit()
+        
+        return '', 204
         
 class NotasController:
     
