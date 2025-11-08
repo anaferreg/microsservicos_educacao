@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from models import Reserva,db
+from Reserva.app.models import Reserva,db
 #
 class ReservaController:
     
