@@ -45,9 +45,36 @@ Depende do serviço de Gerenciamento para obter `professor_id` e `turma_id`.
 
 Os serviços se comunicam entre si de forma **síncrona**, através de **requisições HTTP REST** com a biblioteca `requests`.
 
-**Fluxo de integração:**
-**[Gerenciamento]** → fornece IDs de professores e turmas
-↓
-**[Reservas]** → utiliza turma_id para associar uma reserva
-↓
-**[Atividades]** → utiliza turma_id e professor_id para associar atividades e notas
+<p align="center">
+  <strong>Fluxo de Integração entre Microsserviços</strong>
+</p>
+
+<p align="center">
+  <pre>
+     ┌───────────────────────────────┐
+     │         GERENCIAMENTO         │
+     │  (Professores, Turmas, Alunos)│
+     │           Porta 5001          │
+     └───────────────┬───────────────┘
+                     │ fornece IDs via HTTP (GET/POST)
+                     ▼
+     ┌───────────────────────────────┐
+     │            RESERVAS           │
+     │ (Salas e Laboratórios)        │
+     │         Porta 5002            │
+     └───────────────┬───────────────┘
+                     │ usa turma_id fornecido
+                     ▼
+     ┌───────────────────────────────┐
+     │       ATIVIDADES / NOTAS      │
+     │ (Vincula Professor e Turma)   │
+     │          Porta 5003           │
+     └───────────────────────────────┘
+  </pre>
+</p>
+
+Cada microsserviço funciona de forma **independente**, mas compartilha informações através de **requisições HTTP REST**.  
+Essa integração é feita de maneira **síncrona**, utilizando a biblioteca `requests` do Python para chamadas entre APIs.
+
+Por exemplo:
+- O serviço **Reservas** valida uma turma antes de criar uma nova reserva, fazendo:
