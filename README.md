@@ -9,9 +9,38 @@ O sistema é dividido em três microsserviços independentes, que se comunicam e
 A arquitetura é composta por três microsserviços autônomos e interconectados:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/bf87154c-ca3f-46d0-a39c-4e19f1266a63"
-       alt="Diagrama de Arquitetura dos Microsserviços"
-       width="750">
+  <pre>
+  ┌──────────────────────────────┐
+│        Gerenciamento         │
+│ (Professores, Turmas, Alunos)│
+│ Porta: 5001                  │
+│                              │
+│ -> Fornece IDs para          │
+│    os outros serviços        │
+└───────────────┬──────────────┘
+                │
+                │ (HTTP Requests)
+                ▼
+┌───────────────┴──────────────┐
+│          Reservas            │
+│ (Reservas de Salas e Labs)   │
+│ Porta: 5002                  │
+│                              │
+│ -> Usa turma_id do           │
+│    serviço Gerenciamento     │
+└───────────────┬──────────────┘
+                │
+                │ (HTTP Requests)
+                ▼
+┌───────────────┴──────────────┐
+│          Atividades          │
+│ (Atividades e Notas)         │
+│ Porta: 5003                  │
+│                              │
+│ -> Usa turma_id e professor_id│
+│    do serviço Gerenciamento   │
+└──────────────────────────────┘
+  </pre>
 </p>
 
 ### 🔹 Gerenciamento
@@ -42,39 +71,103 @@ Depende do serviço de Gerenciamento para obter `professor_id` e `turma_id`.
 - **Porta:** `5003`
 
 ## 🔁 Integração entre Microsserviços
+Os microsserviços se comunicam entre si de forma **síncrona** via **HTTP REST** utilizando a biblioteca `requests`.
 
-Os serviços se comunicam entre si de forma **síncrona**, através de **requisições HTTP REST** com a biblioteca `requests`.
+### Exemplo de fluxo:
+1. O microsserviço **Reservas** faz uma requisição `GET` ao **Gerenciamento** para verificar se o `turma_id` existe.  
+2. O microsserviço **Atividades** faz uma requisição `GET` ao **Gerenciamento** para validar `professor_id` e `turma_id`.  
+3. Caso as validações sejam bem-sucedidas, as informações são persistidas localmente em seu próprio banco SQLite.
 
-<p align="center">
-  <strong>Fluxo de Integração entre Microsserviços</strong>
-</p>
+Essa abordagem mantém **baixo acoplamento** e **independência de falhas** entre os microsserviços.
 
-<p align="center">
-  <pre>
-     ┌───────────────────────────────┐
-     │         GERENCIAMENTO         │
-     │  (Professores, Turmas, Alunos)│
-     │           Porta 5001          │
-     └───────────────┬───────────────┘
-                     │ fornece IDs via HTTP (GET/POST)
-                     ▼
-     ┌───────────────────────────────┐
-     │            RESERVAS           │
-     │ (Salas e Laboratórios)        │
-     │         Porta 5002            │
-     └───────────────┬───────────────┘
-                     │ usa turma_id fornecido
-                     ▼
-     ┌───────────────────────────────┐
-     │       ATIVIDADES / NOTAS      │
-     │ (Vincula Professor e Turma)   │
-     │          Porta 5003           │
-     └───────────────────────────────┘
-  </pre>
-</p>
+---
 
-Cada microsserviço funciona de forma **independente**, mas compartilha informações através de **requisições HTTP REST**.  
-Essa integração é feita de maneira **síncrona**, utilizando a biblioteca `requests` do Python para chamadas entre APIs.
+## ⚙️ Execução com Docker
 
-Por exemplo:
-- O serviço **Reservas** valida uma turma antes de criar uma nova reserva, fazendo:
+### 📁 Estrutura de diretórios
+MICROSSERVICOS_EDUCACAO/
+├── atividades/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── Controllers.py
+│   │   ├── models.py
+│   │   ├── routes.py
+│   ├── instance/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── run.py
+│
+├── gerenciamento/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── controllers.py
+│   │   ├── models.py
+│   │   ├── routes.py
+│   ├── instance/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── run.py
+│
+├── Reserva/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── Controllers.py
+│   │   ├── models.py
+│   │   ├── routes.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── run.py
+│
+├── .gitignore
+├── docker-compose.yml
+└── README.md
+
+
+### ▶️ Passos para execução
+
+1. **Clonar o repositório:**
+   ```bash
+   git clone <Link HTTPS>
+   cd microsservicos_educacao
+
+2. **Subir os microsserviços com Docker Compose**
+    ```bash
+    docker-compose up --build
+
+3. Acessar os serviços
+- **Gerenciamento:** [http://localhost:5001](http://localhost:5001)
+- **Reservas:** [http://localhost:5002](http://localhost:5002)
+- **Atividades:** [http://localhost:5003](http://localhost:5003)
+
+4. Documentação Swagger (para cada serviço)
+- [http://localhost:5001/swagger](http://localhost:5001/swagger)
+- [http://localhost:5002/swagger](http://localhost:5002/swagger)
+- [http://localhost:5003/swagger](http://localhost:5003/swagger)
+
+
+## 🧠 Tecnologias Utilizadas
+- **Flask** — Framework web para construção de APIs RESTful  
+- **SQLAlchemy** — ORM para persistência de dados  
+- **SQLite** — Banco de dados leve e local  
+- **Docker / Docker Compose** — Containerização e orquestração  
+- **Swagger (Flasgger)** — Documentação interativa da API  
+- **Requests** — Comunicação HTTP entre serviços  
+
+---
+
+## 🧩 Benefícios da Arquitetura de Microsserviços
+- Independência de implantação e manutenção  
+- Isolamento de falhas entre serviços  
+- Escalabilidade horizontal por módulo  
+- Maior clareza de responsabilidades por domínio  
+  (Gerenciamento, Reservas e Atividades)  
+
+---
+
+## 👥 Autores
+Projeto desenvolvido por:  
+**[Eduardo Oliveira]** - **RA: 2501548**
+**[Analice Gomes]** - **RA: 2404038**
+**[Arthur Gonçalves]** - **RA: 2404108**
+
+_Faculdade Impacta Tecnologia._
