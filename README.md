@@ -96,7 +96,6 @@ MICROSSERVICOS_EDUCACAO/
 │   │   ├── Controllers.py
 │   │   ├── models.py
 │   │   ├── routes.py
-│   ├── instance/
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── run.py
