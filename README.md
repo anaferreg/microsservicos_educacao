@@ -85,7 +85,11 @@ Essa abordagem mantém **baixo acoplamento** e **independência de falhas** entr
 ## ⚙️ Execução com Docker
 
 ### 📁 Estrutura de diretórios
+<p align="center">
+<pre>
+
 MICROSSERVICOS_EDUCACAO/
+│
 ├── atividades/
 │   ├── app/
 │   │   ├── __init__.py
@@ -121,6 +125,9 @@ MICROSSERVICOS_EDUCACAO/
 ├── .gitignore
 ├── docker-compose.yml
 └── README.md
+
+</pre>
+</p>
 
 
 ### ▶️ Passos para execução
@@ -166,8 +173,8 @@ MICROSSERVICOS_EDUCACAO/
 
 ## 👥 Autores
 Projeto desenvolvido por:  
-**[Eduardo Oliveira]** - **RA: 2501548**
-**[Analice Gomes]** - **RA: 2404038**
-**[Arthur Gonçalves]** - **RA: 2404108**
+**Eduardo Oliveira** - **RA: 2501548**,
+**Analice Gomes** - **RA: 2404038** e
+**Arthur Gonçalves** - **RA: 2404108**
 
 _Faculdade Impacta Tecnologia._
