@@ -15,7 +15,7 @@ ENV FLASK_APP=run.py
 ENV FLASK_ENV=development
 
 # Expõe a porta padrão
-EXPOSE 5001
+EXPOSE 5000
 
 # Roda o Flask
 CMD ["flask", "run", "--host=0.0.0.0"]

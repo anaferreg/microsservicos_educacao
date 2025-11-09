@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from .models import Atividades,Notas,db
+import datetime
 
 class AtividadesController:
     
@@ -15,22 +16,47 @@ class AtividadesController:
         if not atividades:
             return jsonify({'message':'Atividades não'})
         
+    @staticmethod
     def create_Atividade():
-        data=request.json
-        turma_id=data.get('turma_id')
-        professor_id=data.get('professor_id')
+        data = request.json
+        if data is None:
+            return jsonify({'message': 'Nenhum JSON recebido ou formato inválido.'}), 400
+        
+        # validar campos obrigatórios
+        nome_atividade = data.get('nome_atividade')
+        peso_porcento = data.get('peso_porcento')
+        turma_id = data.get('turma_id')
+        professor_id = data.get('professor_id')
+        data_entrega_str = data.get('data_entrega')
+        
+        if not nome_atividade:
+            return jsonify({'message': 'O nome_atividade é obrigatório'}), 400
+        if peso_porcento is None:
+            return jsonify({'message': 'O peso_porcento é obrigatório'}), 400
         if not turma_id:
             return jsonify({'message': 'O turma_id é obrigatório'}), 400
         if not professor_id:
             return jsonify({'message': 'O professor_id é obrigatório'}), 400
-        nova_atividade=Atividades(
-            nome_atividade=data.get('num_sala'),
+        if not data_entrega_str:
+            return jsonify({'message': 'A data_entrega é obrigatória'}), 400
+            
+        # converter string de data para objeto Date
+        try:
+            data_entrega = datetime.date.fromisoformat(data_entrega_str)
+        except ValueError:
+            return jsonify({'message': 'Formato de data inválido. Use YYYY-MM-DD'}), 400
+
+        nova_atividade = Atividades(
+            nome_atividade=nome_atividade,
             descricao=data.get('descricao'),
-            peso_porcento=data.get('peso_porcento'),
-            data_entrega=data.get('data_entrega'),
+            peso_porcento=peso_porcento,
+            data_entrega=data_entrega,
             turma_id=turma_id,
             professor_id=professor_id
         )
+        db.session.add(nova_atividade)
+        db.session.commit()
+        return jsonify(nova_atividade.to_json()), 201
 
     @staticmethod    
     def update_atividade(id):
@@ -43,7 +69,7 @@ class AtividadesController:
         # Atualiza apenas os campos enviados, mantém os valores existentes se não enviados
         atividade.nome_atividade = data.get('nome_atividade', atividade.nome_atividade)
         atividade.descricao = data.get('descricao', atividade.descricao)
-        atividade.data = data.get('data', atividade.data)
+        atividade.data_entrega = data.get('data_entrega', atividade.data_entrega)
         atividade.turma_id = data.get('turma_id', atividade.turma_id)
         atividade.professor_id = data.get('professor_id', atividade.professor_id)
         

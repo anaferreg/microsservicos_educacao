@@ -22,4 +22,8 @@ def create_app():
     from .routes import bp
     app.register_blueprint(bp)
 
+    # garante que as tabelas existam quando o app é inicializado (útil ao usar "flask run")
+    with app.app_context():
+        db.create_all()
+
     return app

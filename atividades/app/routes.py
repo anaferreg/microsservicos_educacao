@@ -221,7 +221,7 @@ def get_all_notas():
         return NotasController.get_all_notas()
 
 @bp.route('/notas/<int:id>', methods=['GET'])
-def get_atividade_id(id):
+def get_notas_id(id):
         """
         Busca uma nota específica pelo seu ID.
         ---
@@ -243,7 +243,7 @@ def get_atividade_id(id):
         return NotasController.get_notas_by_id(id)
 
 @bp.route('/notas', methods=['POST'])
-def create_atividade():
+def create_notas():
         """
         Registra uma nova nota.
         ---
@@ -284,7 +284,7 @@ def create_atividade():
         return NotasController.create_Notas()
 
 @bp.route('/notas/<int:id>', methods=['PUT'])
-def update_atividade(id):
+def update_notas(id):
         """
         Atualiza uma nota existente.
         ---
@@ -318,7 +318,7 @@ def update_atividade(id):
         return NotasController.update_Notas(id)
 
 @bp.route('/notas/<int:id>', methods=['DELETE'])
-def delete_atividade(id):
+def delete_notas(id):
         """
         Remove uma nota.
         ---

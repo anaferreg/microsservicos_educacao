@@ -158,16 +158,19 @@ class TurmaController:
         data = request.json
 
         descricao = data.get('descricao')
+        professor_id = data.get('professor_id')
     
         if not descricao:
-        
             return jsonify({'message': 'A descrição é obrigatória'}), 400
 
-       
+        if professor_id:
+            professor = Professor.query.get(professor_id)
+            if not professor:
+                return jsonify({'message': 'Professor não encontrado'}), 400
+
         nova_turma = Turma(
             descricao=descricao,
-  
-            professor_id=data.get('professor_id'),
+            professor_id=professor_id,
             ativo=data.get('ativo', True) 
         )
         db.session.add(nova_turma)
@@ -183,9 +186,14 @@ class TurmaController:
         
         data = request.json
         
-       
+        professor_id = data.get('professor_id')
+        if professor_id:
+            professor = Professor.query.get(professor_id)
+            if not professor:
+                return jsonify({'message': 'Professor não encontrado'}), 400
+        
         turma.descricao = data.get('descricao', turma.descricao)
-        turma.professor_id = data.get('professor_id', turma.professor_id)
+        turma.professor_id = professor_id if professor_id else turma.professor_id
         turma.ativo = data.get('ativo', turma.ativo)
         
         db.session.commit()
