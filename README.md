@@ -10,10 +10,10 @@ A arquitetura é composta por três microsserviços autônomos e interconectados
 
 <p align="center">
   <pre>
-  ┌──────────────────────────────┐
+┌──────────────────────────────┐
 │        Gerenciamento         │
 │ (Professores, Turmas, Alunos)│
-│ Porta: 5001                  │
+│ Porta: 5000                  │
 │                              │
 │ -> Fornece IDs para          │
 │    os outros serviços        │
@@ -24,7 +24,7 @@ A arquitetura é composta por três microsserviços autônomos e interconectados
 ┌───────────────┴──────────────┐
 │          Reservas            │
 │ (Reservas de Salas e Labs)   │
-│ Porta: 5002                  │
+│ Porta: 5001                  │
 │                              │
 │ -> Usa turma_id do           │
 │    serviço Gerenciamento     │
@@ -35,10 +35,10 @@ A arquitetura é composta por três microsserviços autônomos e interconectados
 ┌───────────────┴──────────────┐
 │          Atividades          │
 │ (Atividades e Notas)         │
-│ Porta: 5003                  │
+│ Porta: 5002                  │
 │                              │
-│ -> Usa turma_id e professor_id│
-│    do serviço Gerenciamento   │
+│-> Usa turma_id e professor_id│
+│   do serviço Gerenciamento   │
 └──────────────────────────────┘
   </pre>
 </p>
