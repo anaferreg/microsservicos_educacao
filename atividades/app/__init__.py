@@ -17,7 +17,20 @@ def create_app():
         'description': 'API para gerenciar Atividades e Notas.'
     }
 
-    swagger = Swagger(app, parse=False)
+    swagger = Swagger(app, config={
+        'headers': [],
+        'specs': [
+            {
+                'endpoint': 'swagger',
+                'route': '/swagger.json',
+                'rule_filter': lambda rule: True,
+                'model_filter': lambda tag: True,  
+            }
+        ],
+        'static_url_path': '/flasgger_static',
+        'swagger_ui': True,
+        'specs_route': '/swagger/'  
+    })
 
     from .routes import bp
     app.register_blueprint(bp)

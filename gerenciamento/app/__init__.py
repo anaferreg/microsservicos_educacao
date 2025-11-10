@@ -16,7 +16,20 @@ def create_app():
         'description': 'Uma API para gerenciar Alunos, Professores e Turmas.'
     }
 
-    swagger = Swagger(app, parse=False)
+    swagger = Swagger(app, config={
+        'headers': [],
+        'specs': [
+            {
+                'endpoint': 'swagger',
+                'route': '/swagger.json',
+                'rule_filter': lambda rule: True,  # inclui todas as rotas
+                'model_filter': lambda tag: True,  # inclui todos os modelos
+            }
+        ],
+        'static_url_path': '/flasgger_static',
+        'swagger_ui': True,
+        'specs_route': '/swagger/'  # 👈 muda a UI para /swagger
+    })
 
     from .routes import bp
     app.register_blueprint(bp)
