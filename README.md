@@ -123,6 +123,7 @@ MICROSSERVICOS_EDUCACAO/
 │
 ├── .gitignore
 ├── docker-compose.yml
+├── test_crud_microservicos.py
 └── README.md
 
 </pre>
@@ -138,6 +139,7 @@ MICROSSERVICOS_EDUCACAO/
 
 2. **Subir os microsserviços com Docker Compose**
     ```bash
+    # Se estiver no Windows o DockerDesktop tem que estar aberto com a sua conta logada do github
     docker-compose up --build
 
 3. Acessar os serviços
