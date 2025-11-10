@@ -50,7 +50,7 @@ Este serviço é o núcleo do sistema, pois fornece os IDs necessários para os 
 - **Entidades:** Professor, Aluno, Turma  
 - **Função principal:** Gerar e fornecer IDs para as entidades base do sistema  
 - **Banco:** `gerenciamento.db`  
-- **Porta:** `5001`
+- **Porta:** `5000`
 
 ### 🔹 Reservas
 Gerencia as **reservas de salas e laboratórios**, associadas a turmas.  
@@ -59,7 +59,7 @@ Depende do serviço de Gerenciamento para obter o `turma_id`.
 - **Entidades:** Reserva  
 - **Função principal:** CRUD de reservas vinculadas a uma turma  
 - **Banco:** `reservas.db`  
-- **Porta:** `5002`
+- **Porta:** `5001`
 
 ### 🔹 Atividades e Notas
 Gerencia **atividades** e **notas** vinculadas a professores e turmas.  
@@ -68,7 +68,7 @@ Depende do serviço de Gerenciamento para obter `professor_id` e `turma_id`.
 - **Entidades:** Atividade, Nota  
 - **Função principal:** CRUD de atividades e notas associadas a professor e turma  
 - **Banco:** `atividades.db`  
-- **Porta:** `5003`
+- **Porta:** `5002`
 
 ## 🔁 Integração entre Microsserviços
 Os microsserviços se comunicam entre si de forma **síncrona** via **HTTP REST** utilizando a biblioteca `requests`.
@@ -141,14 +141,14 @@ MICROSSERVICOS_EDUCACAO/
     docker-compose up --build
 
 3. Acessar os serviços
-- **Gerenciamento:** [http://localhost:5001](http://localhost:5001)
-- **Reservas:** [http://localhost:5002](http://localhost:5002)
-- **Atividades:** [http://localhost:5003](http://localhost:5003)
+- **Gerenciamento:** [http://localhost:5000](http://localhost:5001)
+- **Reservas:** [http://localhost:5001](http://localhost:5002)
+- **Atividades:** [http://localhost:5002](http://localhost:5003)
 
 4. Documentação Swagger (para cada serviço)
+- [http://localhost:5000/swagger](http://localhost:5000/swagger)
 - [http://localhost:5001/swagger](http://localhost:5001/swagger)
 - [http://localhost:5002/swagger](http://localhost:5002/swagger)
-- [http://localhost:5003/swagger](http://localhost:5003/swagger)
 
 
 ## 🧠 Tecnologias Utilizadas
