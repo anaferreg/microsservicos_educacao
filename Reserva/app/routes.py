@@ -108,9 +108,12 @@ def create_reserva():
             num_sala:
               type: string
               example: "Sala 101"
-            descricao:
+            lab:
+              type: boolean
+              example: true
+            data:
               type: string
-              example: "Laboratório de Informática"
+              example: "2024-07-01"
             turma_id:
               type: integer
               example: 1
@@ -120,7 +123,7 @@ def create_reserva():
       400:
         description: Dados inválidos ou turma_id inválido.
     """
-    return ReservaController.create_Reserva()
+    return ReservaController.create_reserva()
 
 @bp.route('/reservas/<int:id>', methods=['PUT'])
 def update_reserva(id):
@@ -154,7 +157,7 @@ def update_reserva(id):
       404:
         description: Reserva não encontrada.
     """
-    return ReservaController.update_Reserva(id)
+    return ReservaController.update_reserva(id)
 
 @bp.route('/reservas/<int:id>', methods=['DELETE'])
 def delete_reserva(id):
@@ -176,4 +179,4 @@ def delete_reserva(id):
       404:
         description: Reserva não encontrada.
     """
-    return ReservaController.delete_Reserva(id)
+    return ReservaController.delete_reserva(id)

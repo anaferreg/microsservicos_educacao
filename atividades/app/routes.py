@@ -106,10 +106,10 @@ def create_atividade():
             nome_atividade:
               type: string
               example: "Projeto Final de Python"
-            descricao:
-              type: string
-              example: "Desenvolver uma API REST com Flask"
-            data:
+            peso_porcento:
+              type: integer
+              example: 30
+            data_entrega:
               type: string
               format: date
               example: "2025-12-01"

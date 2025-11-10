@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request, jsonify
 from .models import Aluno, Professor, Turma, db
 
@@ -20,6 +21,10 @@ class AlunoController:
     def create_Aluno(): 
         data = request.json
         nome = data.get('nome')
+        
+        data_nasciment = None
+        if data.get("data_nascimento"):
+            data_nasciment = datetime.strptime(data["data_nascimento"], "%Y-%m-%d").date()
     
         if not nome:
             return jsonify({'message': 'O nome é obrigatório'}), 400
@@ -28,7 +33,7 @@ class AlunoController:
             nome=nome,
             idade=data.get('idade'),
             turma_id=data.get('turma_id'),
-            data_nascimento=data.get('data_nascimento'),
+            data_nascimento=data_nasciment,
             
             nota_primeiro_semestre=data.get('nota_primeiro_semestre'),
             nota_segundo_semestre=data.get('nota_segundo_semestre')
