@@ -21,10 +21,38 @@ class ReservaController:
     def create_reserva():
         data = request.json
         turma_id = data.get('turma_id')
+        num_sala = data.get('num_sala')
+        lab = data.get('lab')
+        data_value = data.get('data')
 
-        if not turma_id:
+        # campos obrigatórios
+        if turma_id is None:
             return jsonify({'message': 'O turma_id é obrigatório'}), 400
+        if num_sala is None:
+            return jsonify({'message': 'O num_sala é obrigatório'}), 400
+        if lab is None:
+            return jsonify({'message': 'O lab é obrigatório'}), 400
+        if data_value is None:
+            return jsonify({'message': 'A data é obrigatória'}), 400
 
+        # coerção num_sala -> int
+        try:
+            num_sala = int(num_sala)
+        except (TypeError, ValueError):
+            return jsonify({'message': 'num_sala deve ser inteiro'}), 400
+
+        # coerção lab -> bool
+        if isinstance(lab, bool):
+            pass
+        elif isinstance(lab, str):
+            if lab.lower() in ['true', 'false']:
+                lab = lab.lower() == 'true'
+            else:
+                return jsonify({'message': 'lab deve ser booleano'}), 400
+        else:
+            return jsonify({'message': 'lab deve ser booleano'}), 400
+
+        # valida turma via serviço de gerenciamento
         try:
             response = requests.get(f"http://gerenciamento:5000/turmas/{turma_id}")
             if response.status_code != 200:
@@ -32,7 +60,7 @@ class ReservaController:
         except requests.exceptions.RequestException:
             return jsonify({'message': 'Erro ao conectar com o serviço de gerenciamento'}), 500
 
-        data_value = data.get('data')
+        # parsing data
         if isinstance(data_value, str):
             try:
                 data_value = datetime.date.fromisoformat(data_value)
@@ -40,8 +68,8 @@ class ReservaController:
                 return jsonify({'message': 'Formato de data inválido. Use YYYY-MM-DD.'}), 400
 
         nova_reserva = Reserva(
-            num_sala=data.get('num_sala'),
-            lab=data.get('lab'),
+            num_sala=num_sala,
+            lab=lab,
             data=data_value,
             turma_id=turma_id
         )
@@ -57,19 +85,45 @@ class ReservaController:
             return jsonify({'message': 'Reserva não encontrada'}), 404
         
         data = request.json
-        reserva.num_sala = data.get('num_sala', reserva.num_sala)
-        reserva.lab = data.get('lab', reserva.lab)
 
-        new_data = data.get('data', reserva.data)
-        if isinstance(new_data, str):
+        # num_sala (opcional)
+        if 'num_sala' in data:
             try:
-                new_data = datetime.date.fromisoformat(new_data)
-            except ValueError:
-                return jsonify({'message': 'Formato de data inválido. Use YYYY-MM-DD.'}), 400
-        reserva.data = new_data
+                reserva.num_sala = int(data.get('num_sala'))
+            except (TypeError, ValueError):
+                return jsonify({'message': 'num_sala deve ser inteiro'}), 400
 
-        reserva.turma_id = data.get('turma_id', reserva.turma_id)
-        
+        # lab (opcional)
+        if 'lab' in data:
+            lab = data.get('lab')
+            if isinstance(lab, bool):
+                reserva.lab = lab
+            elif isinstance(lab, str) and lab.lower() in ['true','false']:
+                reserva.lab = lab.lower() == 'true'
+            else:
+                return jsonify({'message': 'lab deve ser booleano'}), 400
+
+        # data (opcional)
+        if 'data' in data:
+            new_data = data.get('data')
+            if isinstance(new_data, str):
+                try:
+                    new_data = datetime.date.fromisoformat(new_data)
+                except ValueError:
+                    return jsonify({'message': 'Formato de data inválido. Use YYYY-MM-DD.'}), 400
+            reserva.data = new_data
+
+        # turma_id (opcional) -> validar no serviço gerenciamento
+        if 'turma_id' in data:
+            turma_id = data.get('turma_id')
+            try:
+                resp = requests.get(f"http://gerenciamento:5000/turmas/{turma_id}")
+                if resp.status_code != 200:
+                    return jsonify({'message': 'Turma não encontrada no serviço de gerenciamento'}), 400
+            except requests.exceptions.RequestException:
+                return jsonify({'message': 'Erro ao conectar com o serviço de gerenciamento'}), 500
+            reserva.turma_id = turma_id
+
         db.session.commit()
         return jsonify(reserva.to_json()), 200
     

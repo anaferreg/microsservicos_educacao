@@ -24,20 +24,27 @@ class AlunoController:
         
         data_nasciment = None
         if data.get("data_nascimento"):
-            data_nasciment = datetime.strptime(data["data_nascimento"], "%Y-%m-%d").date()
-    
+            try:
+                data_nasciment = datetime.strptime(data["data_nascimento"], "%Y-%m-%d").date()
+            except ValueError:
+                return jsonify({'message': 'Formato de data_nascimento inválido. Use YYYY-MM-DD.'}), 400
+
         if not nome:
             return jsonify({'message': 'O nome é obrigatório'}), 400
+
+        turma_id = data.get('turma_id')
+        if turma_id:
+            turma = Turma.query.get(turma_id)
+            if not turma:
+                return jsonify({'message': 'Turma não encontrada'}), 400
 
         novo_aluno = Aluno(
             nome=nome,
             idade=data.get('idade'),
-            turma_id=data.get('turma_id'),
+            turma_id=turma_id,
             data_nascimento=data_nasciment,
-            
             nota_primeiro_semestre=data.get('nota_primeiro_semestre'),
             nota_segundo_semestre=data.get('nota_segundo_semestre')
-            
         )
         db.session.add(novo_aluno)
         db.session.commit()
@@ -53,8 +60,23 @@ class AlunoController:
         data = request.json
         aluno.nome = data.get('nome', aluno.nome)
         aluno.idade = data.get('idade', aluno.idade)
-        aluno.turma_id = data.get('turma_id', aluno.turma_id)
-        aluno.data_nascimento = data.get('data_nascimento', aluno.data_nascimento)
+
+        turma_id = data.get('turma_id')
+        if turma_id:
+            turma = Turma.query.get(turma_id)
+            if not turma:
+                return jsonify({'message': 'Turma não encontrada'}), 400
+            aluno.turma_id = turma_id
+
+        # data_nascimento parsing if string provided
+        if 'data_nascimento' in data:
+            dn = data.get('data_nascimento')
+            if isinstance(dn, str):
+                try:
+                    dn = datetime.strptime(dn, "%Y-%m-%d").date()
+                except ValueError:
+                    return jsonify({'message': 'Formato de data_nascimento inválido. Use YYYY-MM-DD.'}), 400
+            aluno.data_nascimento = dn
         
         aluno.nota_primeiro_semestre = data.get('nota_primeiro_semestre', aluno.nota_primeiro_semestre)
         aluno.nota_segundo_semestre = data.get('nota_segundo_semestre', aluno.nota_segundo_semestre)
