@@ -24,6 +24,7 @@ class Atividade(db.Model):
             'professor_id': self.professor_id
         }
 
+
 class Nota(db.Model):
     __tablename__ = 'notas'
 
@@ -32,6 +33,10 @@ class Nota(db.Model):
     aluno_id = db.Column(db.Integer, nullable=False)
     atividade_id = db.Column(db.Integer, nullable=False)
 
-# Backwards compatibility: controllers expect plural class names
-Atividades = Atividade
-Notas = Nota
+    def to_json(self):
+        return {
+            'id': self.id,
+            'nota': self.nota,
+            'aluno_id': self.aluno_id,
+            'atividade_id': self.atividade_id
+        }

@@ -102,10 +102,16 @@ def create_atividade():
             - nome_atividade
             - turma_id
             - professor_id
+            - peso_porcento
+            - data_entrega
+            - descricao
           properties:
             nome_atividade:
               type: string
               example: "Projeto Final de Python"
+            descricao:
+              type: string
+              example: "Desenvolvimento de um projeto final utilizando Python."
             peso_porcento:
               type: integer
               example: 30
@@ -279,10 +285,6 @@ def create_notas():
               type: number
               format: float
               example: 8.5
-            data_entrega:
-              type: string
-              format: date
-              example: "2025-11-30"
     responses:
       201:
         description: Nota registrada com sucesso.

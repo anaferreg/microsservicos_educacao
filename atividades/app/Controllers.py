@@ -1,17 +1,17 @@
 import requests
 import datetime
 from flask import request, jsonify
-from .models import Atividades, Notas, db
+from .models import Atividade, Nota, db
 
 class AtividadesController:
     @staticmethod
     def get_all_atividades():
-        atividades = Atividades.query.all()
+        atividades = Atividade .query.all()
         return jsonify([r.to_json() for r in atividades]), 200
 
     @staticmethod
     def get_atividade_by_id(id):
-        atividade = Atividades.query.get(id)
+        atividade = Atividade.query.get(id)
         if not atividade:
             return jsonify({'message': 'Atividade não encontrada'}), 404
         return jsonify(atividade.to_json()), 200
@@ -43,7 +43,7 @@ class AtividadesController:
         except requests.exceptions.RequestException:
             return jsonify({'message': 'Erro ao conectar com o serviço de gerenciamento'}), 500
 
-        nova_atividade = Atividades(
+        nova_atividade = Atividade(
             nome_atividade=nome_atividade,
             descricao=data.get('descricao'),
             peso_porcento=peso_porcento,
@@ -57,7 +57,7 @@ class AtividadesController:
 
     @staticmethod    
     def update_atividade(id):
-        atividade = Atividades.query.get(id)
+        atividade = Atividade.query.get(id)
         if not atividade:
             return jsonify({'message': 'Atividade não encontrada'}), 404
 
@@ -74,7 +74,7 @@ class AtividadesController:
 
     @staticmethod
     def delete_atividade(id):
-        atividade = Atividades.query.get(id)
+        atividade = Atividade.query.get(id)
         if not atividade:
             return jsonify({'message': 'Atividade não encontrada'}), 404
         db.session.delete(atividade)
@@ -85,12 +85,12 @@ class AtividadesController:
 class NotasController:
     @staticmethod
     def get_all_notas():
-        notas = Notas.query.all()
+        notas = Nota.query.all()
         return jsonify([r.to_json() for r in notas]), 200
 
     @staticmethod
     def get_notas_by_id(id):
-        notas = Notas.query.get(id)
+        notas = Nota.query.get(id)
         if not notas:
             return jsonify({'message': 'Nota não encontrada'}), 404
         return jsonify(notas.to_json()), 200
@@ -112,11 +112,11 @@ class NotasController:
         except requests.exceptions.RequestException:
             return jsonify({'message': 'Erro ao conectar com o serviço de gerenciamento'}), 500
 
-        atividade = Atividades.query.get(atividade_id)
+        atividade = Atividade.query.get(atividade_id)
         if not atividade:
             return jsonify({'message': 'Atividade não encontrada'}), 400
 
-        nova_nota = Notas(
+        nova_nota = Nota(
             nota=nota_valor,
             atividade_id=atividade_id,
             aluno_id=aluno_id
@@ -127,7 +127,7 @@ class NotasController:
 
     @staticmethod
     def update_Notas(id):
-        notas = Notas.query.get(id)
+        notas = Nota.query.get(id)
         if not notas:
             return jsonify({'message': 'Nota não encontrada'}), 404
 
@@ -140,7 +140,7 @@ class NotasController:
 
     @staticmethod
     def delete_Notas(id):
-        notas = Notas.query.get(id)
+        notas = Nota.query.get(id)
         if not notas:
             return jsonify({'message': 'Nota não encontrada'}), 404
         db.session.delete(notas)
